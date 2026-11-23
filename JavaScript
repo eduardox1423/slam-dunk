@@ -1,0 +1,233 @@
+const players = [
+    {
+        name: "Hanamichi Sakuragi",
+        number: "#10",
+        position: "Ala-Pivô (Power Forward)",
+        category: "garrafao",
+        height: "1,89 m",
+        desc: "O autoproclamado 'Gênio'. Possui impulsão absurda e domínio total nos rebotes.",
+        stats: { Rebotes: 98, Velocidade: 90, Arremesso: 55 }
+    },
+    {
+        name: "Kaede Rukawa",
+        number: "#11",
+        position: "Ala (Small Forward)",
+        category: "perimetro",
+        height: "1,87 m",
+        desc: "O super-calouro e maior rival de Sakuragi. Imparável no 1 contra 1 ofensivo.",
+        stats: { Rebotes: 75, Velocidade: 94, Arremesso: 95 }
+    },
+    {
+        name: "Takenori Akagi",
+        number: "#4",
+        position: "Pivô (Center)",
+        category: "garrafao",
+        height: "1,97 m",
+        desc: "O capitão e pilar defensivo do Shohoku, temido no garrafão pela sua enterrada 'Gorila Dunk'.",
+        stats: { Rebotes: 95, Velocidade: 70, Arremesso: 78 }
+    },
+    {
+        name: "Hisashi Mitsui",
+        number: "#14",
+        position: "Ala-Armador (Shooting Guard)",
+        category: "perimetro",
+        height: "1,84 m",
+        desc: "Ex-MVP do ensino fundamental e especialista mortal nos arremessos de 3 pontos.",
+        stats: { Rebotes: 60, Velocidade: 80, Arremesso: 99 }
+    },
+    {
+        name: "Ryota Miyagi",
+        number: "#7",
+        position: "Armador (Point Guard)",
+        category: "perimetro",
+        height: "1,68 m",
+        desc: "O cérebro rápido do time. Compensa a baixa estatura com dribles velozes e passes precisos.",
+        stats: { Rebotes: 50, Velocidade: 99, Arremesso: 74 }
+    }
+];
+
+// Renderizar Cards dos Jogadores
+const container = document.getElementById("players-container");
+const filterBtns = document.querySelectorAll(".filter-btn");
+
+function renderPlayers(filter = "todos") {
+    container.innerHTML = "";
+    const filtered = filter === "todos" ? players : players.filter(p => p.category === filter);
+
+    filtered.forEach(player => {
+        const card = document.createElement("div");
+        card.className = "player-card";
+        card.innerHTML = `
+            <div class="player-header">
+                <h3>${player.name}</h3>
+                <span class="jersey-number">${player.number}</span>
+            </div>
+            <p class="player-pos">${player.position} • ${player.height}</p>
+            <p style="margin-bottom: 15px; font-size: 0.95rem;">${player.desc}</p>
+            ${Object.entries(player.stats).map(([key, val]) => `
+                <div class="stat-bar">
+                    <span>${key}: ${val}%</span>
+                    <div class="bar-bg"><div class="bar-fill" style="width: ${val}%"></div></div>
+                </div>
+            `).join("")}
+        `;
+        container.appendChild(card);
+    });
+}
+
+filterBtns.forEach(btn => {
+    btn.addEventListener("click", () => {
+        filterBtns.forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        renderPlayers(btn.dataset.filter);
+    });
+});
+
+renderPlayers();
+
+// Sistema de Frases Icônicas
+const quotes = [
+    { text: '"Desistir agora significa que o jogo já acabou."', author: "— Técnico Mitsuyoshi Anzai" },
+    { text: '"A mão esquerda serve apenas para apoiar!"', author: "— Hanamichi Sakuragi" },
+    { text: '"Técnico... eu quero jogar basquete."', author: "— Hisashi Mitsui" },
+    { text: '"Quem controla os rebotes controla o jogo."', author: "— Takenori Akagi" },
+    { text: '"Meu momento de glória é agora!"', author: "— Hanamichi Sakuragi" }
+];
+
+let currentQuote = 0;
+document.getElementById("new-quote-btn").addEventListener("click", () => {
+    currentQuote = (currentQuote + 1) % quotes.length;
+    document.getElementById("quote-text").textContent = quotes[currentQuote].text;
+    document.getElementById("quote-author").textContent = quotes[currentQuote].author;
+});
+
+// Mini-Game de Lance Livre (Canvas)
+const canvas = document.getElementById("basketballCanvas");
+const ctx = canvas.getContext("2d");
+const shootBtn = document.getElementById("shoot-btn");
+const powerBar = document.getElementById("power-bar");
+const feedback = document.getElementById("game-feedback");
+const scoreEl = document.getElementById("score");
+const highScoreEl = document.getElementById("high-score");
+
+let power = 0;
+let charging = false;
+let chargeInterval;
+let score = 0;
+let highScore = 0;
+
+let ball = { x: 80, y: 220, radius: 15, shooting: false, vx: 0, vy: 0, scored: false };
+const hoop = { x: 320, y: 120, width: 45 };
+
+function drawCourt() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Tabela
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(360, 70, 8, 70);
+
+    // Aro
+    ctx.strokeStyle = "#ff4500";
+    ctx.lineWidth = 4;
+    ctx.beginPath();
+    ctx.moveTo(hoop.x, hoop.y);
+    ctx.lineTo(hoop.x + hoop.width, hoop.y);
+    ctx.stroke();
+
+    // Rede simples
+    ctx.strokeStyle = "#cccccc";
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(hoop.x + 5, hoop.y);
+    ctx.lineTo(hoop.x + 12, hoop.y + 30);
+    ctx.lineTo(hoop.x + 33, hoop.y + 30);
+    ctx.lineTo(hoop.x + 40, hoop.y);
+    ctx.stroke();
+
+    // Bola
+    ctx.fillStyle = "#e65c00";
+    ctx.beginPath();
+    ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = "#000";
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+}
+
+function updateGame() {
+    if (ball.shooting) {
+        ball.x += ball.vx;
+        ball.y += ball.vy;
+        ball.vy += 0.35; // Gravidade
+
+        // Checar se entrou no aro
+        if (!ball.scored && ball.vy > 0 &&
+            ball.x > hoop.x && ball.x < hoop.x + hoop.width &&
+            Math.abs(ball.y - hoop.y) < 12) {
+            ball.scored = true;
+            score++;
+            if (score > highScore) highScore = score;
+            scoreEl.textContent = score;
+            highScoreEl.textContent = highScore;
+            feedback.textContent = "SWISH! Cesta perfeita do Shohoku!";
+            feedback.style.color = "#28a745";
+        }
+
+        // Resetar bola quando sair da tela
+        if (ball.y > canvas.height + 20 || ball.x > canvas.width + 20) {
+            if (!ball.scored) {
+                score = 0;
+                scoreEl.textContent = score;
+                feedback.textContent = "Acertou o aro! Tente novamente.";
+                feedback.style.color = "#ff4d4d";
+            }
+            resetBall();
+        }
+    }
+    drawCourt();
+    requestAnimationFrame(updateGame);
+}
+
+function resetBall() {
+    ball = { x: 80, y: 220, radius: 15, shooting: false, vx: 0, vy: 0, scored: false };
+    power = 0;
+    powerBar.style.width = "0%";
+}
+
+function startCharge() {
+    if (ball.shooting) return;
+    charging = true;
+    power = 0;
+    feedback.textContent = "";
+    chargeInterval = setInterval(() => {
+        power += 2.5;
+        if (power > 100) power = 0;
+        powerBar.style.width = power + "%";
+    }, 25);
+}
+
+function releaseShot() {
+    if (!charging) return;
+    charging = false;
+    clearInterval(chargeInterval);
+
+    ball.shooting = true;
+    // Zona verde fica entre 65% e 85%
+    if (power >= 65 && power <= 85) {
+        ball.vx = 5.4;
+        ball.vy = -10.2;
+    } else if (power < 65) {
+        ball.vx = 4.2;
+        ball.vy = -8.5;
+    } else {
+        ball.vx = 6.5;
+        ball.vy = -11.5;
+    }
+}
+
+shootBtn.addEventListener("mousedown", startCharge);
+shootBtn.addEventListener("mouseup", releaseShot);
+shootBtn.addEventListener("touchstart", (e) => { e.preventDefault(); startCharge(); });
+shootBtn.addEventListener("touchend", (e) => { e.preventDefault(); releaseShot(); });
+
+updateGame();
