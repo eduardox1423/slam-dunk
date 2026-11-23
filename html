@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Slam Dunk | Shohoku High School Basketball</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <!-- Navegação -->
+    <header>
+        <nav class="navbar">
+            <div class="logo">SHOHOKU <span>#10</span></div>
+            <ul class="nav-links">
+                <li><a href="#sobre">A Obra</a></li>
+                <li><a href="#jogadores">Os 5 Titulares</a></li>
+                <li><a href="#frases">Citações</a></li>
+                <li><a href="#jogo">Lance Livre</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Seção Principal (Hero) -->
+    <section class="hero">
+        <div class="hero-content">
+            <span class="badge">MANGÁ & ANIME CLÁSSICO</span>
+            <h1>O GÊNIO DO BASQUETE ESTÁ EM QUADRA</h1>
+            <p>Acompanhe a jornada de Hanamichi Sakuragi e do time do Colégio Shohoku rumo ao Campeonato Nacional.</p>
+            <a href="#jogadores" class="btn-primary">Conhecer o Time</a>
+        </div>
+    </section>
+
+    <!-- Sobre a Obra -->
+    <section id="sobre" class="section">
+        <div class="container">
+            <h2 class="section-title">SOBRE SLAM DUNK</h2>
+            <div class="about-grid">
+                <div class="about-text">
+                    <p>Criado por <strong>Takehiko Inoue</strong> e publicado originalmente na <em>Weekly Shōnen Jump</em> entre 1990 e 1996, <strong>Slam Dunk</strong> revolucionou os mangás de esporte e popularizou o basquete em todo o Japão.</p>
+                    <p>A história acompanha <strong>Hanamichi Sakuragi</strong>, um delinquente colegial famoso por ter sido rejeitado por 50 garotas. Ao entrar no colégio Shohoku, ele se apaixona por Haruko Akagi, que o incentiva a entrar para o clube de basquete devido à sua altura e capacidade atlética impressionantes.</p>
+                </div>
+                <div class="about-stats">
+                    <div class="stat-box">
+                        <h3>31</h3>
+                        <p>Volumes no Mangá</p>
+                    </div>
+                    <div class="stat-box">
+                        <h3>101</h3>
+                        <p>Episódios no Anime</p>
+                    </div>
+                    <div class="stat-box">
+                        <h3>170M+</h3>
+                        <p>Cópias Vendidas</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Os 5 Titulares -->
+    <section id="jogadores" class="section bg-dark">
+        <div class="container">
+            <h2 class="section-title text-white">OS 5 TITULARES DO SHOHOKU</h2>
+            
+            <div class="filter-buttons">
+                <button class="filter-btn active" data-filter="todos">Todos</button>
+                <button class="filter-btn" data-filter="garrafao">Garrafão (PF / C)</button>
+                <button class="filter-btn" data-filter="perimetro">Perímetro (PG / SG / SF)</button>
+            </div>
+
+            <div class="players-grid" id="players-container">
+                <!-- Cards gerados via JavaScript -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Frases Icônicas -->
+    <section id="frases" class="section">
+        <div class="container quote-container">
+            <h2 class="section-title">FRASES ICÔNICAS</h2>
+            <div class="quote-box">
+                <p id="quote-text">"Desistir agora significa que o jogo já acabou."</p>
+                <span id="quote-author">— Técnico Mitsuyoshi Anzai</span>
+            </div>
+            <button id="new-quote-btn" class="btn-secondary">Próxima Frase</button>
+        </div>
+    </section>
+
+    <!-- Mini-Game de Lance Livre -->
+    <section id="jogo" class="section bg-dark">
+        <div class="container game-container">
+            <h2 class="section-title text-white">DESAFIO DE LANCE LIVRE</h2>
+            <p class="text-white">Segure o botão para carregar a força e solte na <strong>zona verde</strong> para fazer a cesta!</p>
+            
+            <div class="scoreboard">
+                <div>Cestas: <span id="score">0</span></div>
+                <div>Recorde: <span id="high-score">0</span></div>
+            </div>
+
+            <canvas id="basketballCanvas" width="400" height="300"></canvas>
+
+            <div class="power-bar-container">
+                <div class="target-zone"></div>
+                <div id="power-bar"></div>
+            </div>
+
+            <button id="shoot-btn" class="btn-primary">SEGURE PARA ARREMESSAR</button>
+            <p id="game-feedback" class="feedback-text"></p>
+        </div>
+    </section>
+
+    <!-- Rodapé -->
+    <footer>
+        <p>Projeto Fã de Slam Dunk • Cores inspiradas no Colégio Shohoku</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
